@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Books</title>
+</head>
+<body>
+    <h1>Manage Books</h1>
+    <a href="{% url 'home' %}">Home</a>
+
+    <form action="save/" method="post">
+        {% csrf_token %}
+        <label for="name">Book Title:</label><br>
+        <input type="text" id="name" name="name" required><br>
+        <label for="description">Description:</label><br>
+        <input type="text" id="description" name="description"><br>
+        <label for="author">Author:</label><br>
+        <select name="author_id" required>
+            {% for author in authors %}
+                <option value="{{ author.id }}">{{ author.name }}</option>
+            {% endfor %}
+        </select><br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Actions</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.title }}</td>
+            <td>{{ item.author.name }}</td>
+            <td>
+                <a href="edit/{{ item.id }}">Edit</a>
+                <a href="delete/{{ item.id }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

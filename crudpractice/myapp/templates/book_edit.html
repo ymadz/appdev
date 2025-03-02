@@ -1,0 +1,14 @@
+<form method="post">
+    {% csrf_token %}
+    <label>Title:</label>
+    <input type="text" name="name" value="{{ item.title }}" required><br>
+    <label>Author:</label>
+    <select name="author_id">
+        {% for author in authors %}
+            <option value="{{ author.id }}" {% if author.id == item.author.id %}selected{% endif %}>
+                {{ author.name }}
+            </option>
+        {% endfor %}
+    </select><br>
+    <button type="submit">Save</button>
+</form>
