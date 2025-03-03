@@ -42,11 +42,8 @@ def delete_student(request, id):
 # Create Course
 def create_course(request):
     if request.method == "POST":
-        form = CourseForm(request.POST)
         if form.is_valid():
-            form.save()
             return redirect("course_list")
-    else:
         form = CourseForm()
     
     return render(request, "course_form.html", {"form": form, "title": "Add Course"})
