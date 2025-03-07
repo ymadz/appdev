@@ -15,8 +15,16 @@ def set_task_status(task):
     return task
 
 # Show all tasks
+from django.shortcuts import render
+from .models import Task
+
 def task_list(request):
-    tasks = Task.objects.all()
+    query = request.GET.get('q')
+    if query:
+        tasks = Task.objects.filter(title__icontains=query)
+    else:
+        tasks = Task.objects.all()
+    
     return render(request, 'task_list.html', {'tasks': tasks})
 
 # Add new task

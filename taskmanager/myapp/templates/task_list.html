@@ -11,6 +11,10 @@
     <div class="container">
         <h1>Task List</h1>
         <a href="{% url 'task_create' %}" class="btn btn-primary">Add New Task</a>
+        <form method="GET" action="{% url 'task_list' %}" class="form-inline my-3">
+            <input type="text" name="q" class="form-control mr-2" placeholder="Search tasks" value="{{ request.GET.q }}">
+            <button type="submit" class="btn btn-outline-primary">Search</button>
+        </form>        
         <table class="table table-striped">
             <thead>
                 <tr>
