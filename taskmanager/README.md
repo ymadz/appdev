@@ -17,13 +17,14 @@ venv\Scripts\activate  # Windows
 source venv/bin/activate  # Mac/Linux
 ```
 
-### 3. Start the Django Project
-Run the following command to start the Django server and click on the link on the terminal to open the application:
+### 3. Migrate the Models
+Run the following command to apply database migrations:
+```sh
+python manage.py migrate
+```
+
+### 4. Start the Django Project
+Run the following command to start the Django server and click the link on the terminal to open the application:
 ```sh
 python manage.py runserver
 ```
-
-## Additional Notes
-- Ensure you have Django installed before running the project.
-- Configure your `settings.py` file to connect to `taskdb`.
-
