@@ -1,41 +1,41 @@
 from django.shortcuts import render
+from .forms import PlayerPerformanceForm
 import pickle
 import numpy as np
-from .models import PlayerInput
-import os
 
-# Load model once
-MODEL_PATH = os.path.join(os.path.dirname(__file__), 'xgboost_fifa_model.pkl')
-with open(MODEL_PATH, 'rb') as f:
-    model = pickle.load(f)
-
-def predict(request):
+def predict_player_performance(request):
     prediction = None
+    error_message = None
 
     if request.method == 'POST':
-        try:
-            pace = float(request.POST.get('pace'))
-            shooting = float(request.POST.get('shooting'))
-            passing = float(request.POST.get('passing'))
-            dribbling = float(request.POST.get('dribbling'))
-            defending = float(request.POST.get('defending'))
-            physic = float(request.POST.get('physic'))
-
+        form = PlayerPerformanceForm(request.POST)
+        
+        if form.is_valid():
+            # Get form data
+            pace = form.cleaned_data['pace']
+            shooting = form.cleaned_data['shooting']
+            passing = form.cleaned_data['passing']
+            dribbling = form.cleaned_data['dribbling']
+            defending = form.cleaned_data['defending']
+            physic = form.cleaned_data['physic']
+            
+            # Prepare data for prediction
             input_data = np.array([[pace, shooting, passing, dribbling, defending, physic]])
-            prediction = round(model.predict(input_data)[0], 2)
+            
+            # Load the pre-trained model (replace with your own path)
+            try:
+                with open('myapp/xgboost_fifa_model.pkl', 'rb') as model_file:
+                    model = pickle.load(model_file)
+                prediction = model.predict(input_data)[0]  # Assuming a regression model
+            except Exception as e:
+                error_message = f"Error loading model: {e}"
+        else:
+            error_message = "Please ensure all fields are filled with valid numbers."
+    else:
+        form = PlayerPerformanceForm()
 
-            # Save to MySQL DB
-            PlayerInput.objects.create(
-                pace=pace,
-                shooting=shooting,
-                passing=passing,
-                dribbling=dribbling,
-                defending=defending,
-                physic=physic,
-                prediction=prediction
-            )
-
-        except Exception as e:
-            prediction = f"Error: {str(e)}"
-
-    return render(request, 'form.html', {'prediction': prediction})
+    return render(request, 'form.html', {
+        'form': form,
+        'prediction': prediction,
+        'error_message': error_message
+    })

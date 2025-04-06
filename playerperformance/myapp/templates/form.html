@@ -2,61 +2,125 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Player Performance Predictor</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Performance Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body>
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow rounded">
-                <div class="card-header text-center bg-primary text-white">
-                    <h3>Player Performance Predictor</h3>
-                </div>
-                <div class="card-body">
-                    <form method="post" novalidate>
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label">Pace</label>
-                            <input type="number" step="any" name="pace" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Shooting</label>
-                            <input type="number" step="any" name="shooting" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Passing</label>
-                            <input type="number" step="any" name="passing" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Dribbling</label>
-                            <input type="number" step="any" name="dribbling" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Defending</label>
-                            <input type="number" step="any" name="defending" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Physic</label>
-                            <input type="number" step="any" name="physic" class="form-control" required>
-                        </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Predict</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<div class="container mt-5">
+    <h2>Player Performance Prediction</h2>
 
-            {% if prediction %}
-                <div class="alert alert-success mt-4 text-center">
-                    <h5>Predicted Overall Rating:</h5>
-                    <strong>{{ prediction }}</strong>
+    <form id="predictionForm" method="post">
+        {% csrf_token %}
+        
+        <div class="form-group mb-3">
+            <label for="pace">Pace</label>
+            {{ form.pace }}
+            {% if form.pace.errors %}
+                <div class="alert alert-danger mt-2">
+                    {% for error in form.pace.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
                 </div>
             {% endif %}
         </div>
+
+        <div class="form-group mb-3">
+            <label for="shooting">Shooting</label>
+            {{ form.shooting }}
+            {% if form.shooting.errors %}
+                <div class="alert alert-danger mt-2">
+                    {% for error in form.shooting.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="passing">Passing</label>
+            {{ form.passing }}
+            {% if form.passing.errors %}
+                <div class="alert alert-danger mt-2">
+                    {% for error in form.passing.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="dribbling">Dribbling</label>
+            {{ form.dribbling }}
+            {% if form.dribbling.errors %}
+                <div class="alert alert-danger mt-2">
+                    {% for error in form.dribbling.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="defending">Defending</label>
+            {{ form.defending }}
+            {% if form.defending.errors %}
+                <div class="alert alert-danger mt-2">
+                    {% for error in form.defending.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="physic">Physic</label>
+            {{ form.physic }}
+            {% if form.physic.errors %}
+                <div class="alert alert-danger mt-2">
+                    {% for error in form.physic.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+    </form>
+
+    {% if error_message %}
+        <div class="alert alert-danger mt-3">
+            <p>{{ error_message }}</p>
+        </div>
+    {% endif %}
+
+    {% if prediction %}
+    <div class="alert alert-success mt-3">
+        <h3 class="mt-4">Predicted Overall Rating: {{ prediction }}</h3>
     </div>
+    {% endif %}
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function resetForm() {
+        // Use a more specific method to reset all fields in the form
+        const form = document.getElementById("predictionForm");
+        form.reset();
+        
+        // Optionally, you can manually clear any error messages or prediction results:
+        const predictionResult = document.querySelector(".alert-success");
+        if (predictionResult) {
+            predictionResult.style.display = "none";  // Hide prediction result
+        }
+
+        const errorMessages = document.querySelectorAll(".alert-danger");
+        errorMessages.forEach(function(error) {
+            error.style.display = "none";  // Hide error messages
+        });
+    }
+</script>
 </body>
 </html>
