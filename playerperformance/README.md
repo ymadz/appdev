@@ -28,8 +28,7 @@ Before running the application, make sure you have the following installed:
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/yourusername/player-performance-prediction.git
-   cd player-performance-prediction
+   git clone [https://github.com/yourusername/player-performance-prediction.git](https://github.com/ymadz/appdev)
    ```
 
 2. **Set up a virtual environment**:
