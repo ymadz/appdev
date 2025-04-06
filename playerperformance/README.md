@@ -42,7 +42,7 @@ Before running the application, make sure you have the following installed:
 
 3. **Install dependencies**:
 
-  Use terminal to install the listed dependencies on top.
+   Use terminal to install the listed dependencies on top.
 
 4. **Set up the database**:
 
@@ -53,7 +53,7 @@ Before running the application, make sure you have the following installed:
    python manage.py migrate
    ```
 
-5. **Train the model**:
+5. **Train the model (optional)**:
 
    The XGBoost model can be trained using the provided script. Run the following to train and pickle the model:
 
