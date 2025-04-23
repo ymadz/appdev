@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titanic Survival Prediction</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #ffe6f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            border: none;
+            border-radius: 1rem;
+        }
+
+        .card-header {
+            background-color: #ff99cc;
+            color: white;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+        }
+
+        .btn-primary {
+            background-color: #ff66a3;
+            border-color: #ff66a3;
+        }
+
+        .btn-primary:hover {
+            background-color: #ff3385;
+            border-color: #ff3385;
+        }
+
+        .btn-secondary {
+            background-color: #f5b3d6;
+            border-color: #f5b3d6;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f28bb9;
+            border-color: #f28bb9;
+        }
+
+        .alert-info {
+            background-color: #ffe6f0;
+            border-color: #ffb6d9;
+            color: #cc0066;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="card shadow-sm">
+                    <div class="card-header text-center">
+                        <h3 class="mb-0">🌸 Titanic Survival Predictor</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label for="id_Pclass" class="form-label">Passenger Class</label>
+                                    <select name="Pclass" id="id_Pclass" class="form-select{% if form.Pclass.errors %} is-invalid{% endif %}" required>
+                                        <option value="" disabled {% if not form.data.Pclass %}selected{% endif %}>Select class</option>
+                                        {% for val, label in form.fields.Pclass.choices %}
+                                            <option value="{{ val }}" {% if form.data.Pclass == val|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {% if form.Pclass.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.Pclass.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="id_Sex" class="form-label">Sex</label>
+                                    <select name="Sex" id="id_Sex" class="form-select{% if form.Sex.errors %} is-invalid{% endif %}" required>
+                                        <option value="" disabled {% if not form.data.Sex %}selected{% endif %}>Select gender</option>
+                                        {% for val, label in form.fields.Sex.choices %}
+                                            <option value="{{ val }}" {% if form.data.Sex == val|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {% if form.Sex.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.Sex.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="id_Age" class="form-label">Age</label>
+                                    <input type="number" name="Age" id="id_Age" class="form-control{% if form.Age.errors %} is-invalid{% endif %}" value="{{ form.data.Age }}" step="0.1" min="0" max="120" required>
+                                    {% if form.Age.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.Age.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="id_SibSp" class="form-label">Siblings/Spouses Aboard</label>
+                                    <input type="number" name="SibSp" id="id_SibSp" class="form-control{% if form.SibSp.errors %} is-invalid{% endif %}" value="{{ form.data.SibSp }}" min="0" required>
+                                    {% if form.SibSp.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.SibSp.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="id_Parch" class="form-label">Parents/Children Aboard</label>
+                                    <input type="number" name="Parch" id="id_Parch" class="form-control{% if form.Parch.errors %} is-invalid{% endif %}" value="{{ form.data.Parch }}" min="0" required>
+                                    {% if form.Parch.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.Parch.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="id_Fare" class="form-label">Fare</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" name="Fare" id="id_Fare" class="form-control{% if form.Fare.errors %} is-invalid{% endif %}" value="{{ form.data.Fare }}" step="0.01" min="0" required>
+                                    </div>
+                                    {% if form.Fare.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.Fare.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-12 text-center mt-4">
+                                    <button type="submit" class="btn btn-primary px-4">🌷 Predict</button>
+                                    <button type="reset" class="btn btn-secondary px-4 ms-2">Reset</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        {% if prediction is not None %}
+                            <div class="mt-4 alert alert-info text-center">
+                                <h5 class="mb-0">Prediction: <strong>{{ prediction|yesno:"Survived,Did not survive" }}</strong></h5>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+</body>
+</html>
