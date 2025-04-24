@@ -28,7 +28,7 @@ rmse = mean_squared_error(y_test, preds) ** 0.5
 print(f"RMSE: {rmse:.2f}")
 
 # Save the model as pickle
-with open("xgboost_fifa_model.pkl", "wb") as f:
-    pickle.dump(model, f)
+# with open("xgboost_fifa_model.pkl", "wb") as f:
+#     pickle.dump(model, f)
 
-print("✅ Model saved as xgboost_fifa_model.pkl")
+# print("✅ Model saved as xgboost_fifa_model.pkl")
