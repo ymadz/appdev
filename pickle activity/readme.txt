@@ -1,4 +1,4 @@
-Dataset URL: https://www.kaggle.com/datasets/bryanb/fifa-player-stats-database
+Dataset URL: https://www.kaggle.com/datasets/stefanoleone992/fifa-21-complete-player-dataset?select=players_21.csv
 
 Purpose of Model: FIFA Player Performance Predictor
 
