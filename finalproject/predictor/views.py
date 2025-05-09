@@ -13,7 +13,7 @@ import pickle
 import io
 
 
-with open('xgb_fifa21_model.pkl', 'rb') as file:
+with open('xgboost_fifa_model.pkl', 'rb') as file:
     model = pickle.load(file)
 
 def home(request):
@@ -132,3 +132,62 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+from .forms import PlayerInputForm
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+import pandas as pd
+import pickle
+
+# Load your trained model (do this once, globally ideally)
+with open("xgboost_fifa_model.pkl", "rb") as f:
+    model = pickle.load(f)
+
+@login_required
+def predict_overall(request):
+    prediction = None
+    error = None
+
+    if request.method == 'POST':
+        form = PlayerInputForm(request.POST)
+        if form.is_valid():
+            try:
+                data = form.cleaned_data
+
+                # Encode categorical features to match training-time column names
+                preferred_foot_enc = 1 if data['preferred_foot'] == 'Right' else 0
+                work_rate_enc = hash(data['work_rate']) % 1000
+                position_group_enc = hash(data['player_positions']) % 1000
+
+                # Construct feature DataFrame in exact order
+                features = pd.DataFrame([{
+                    'age': data['age'],
+                    'height_cm': data['height_cm'],
+                    'weight_kg': data['weight_kg'],
+                    'pace': data['pace'],
+                    'shooting': data['shooting'],
+                    'passing': data['passing'],
+                    'dribbling': data['dribbling'],
+                    'defending': data['defending'],
+                    'physic': data['physic'],
+                    'preferred_foot_enc': preferred_foot_enc,
+                    'work_rate_enc': work_rate_enc,
+                    'position_group_enc': position_group_enc
+                }])
+
+                # Make prediction
+                prediction = model.predict(features)[0]
+                prediction = round(prediction, 2)
+
+            except Exception as e:
+                error = f"Error making prediction: {str(e)}"
+        else:
+            error = "Please correct the errors below."
+    else:
+        form = PlayerInputForm()
+
+    return render(request, 'predictor/predict.html', {
+        'form': form,
+        'prediction': prediction,
+        'error': error
+    })

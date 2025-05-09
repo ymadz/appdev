@@ -8,7 +8,7 @@ import pickle
 df = pd.read_csv(r"C:\Users\madz\Documents\GitHub\appdev\playerperformance\datasets\players_15.csv")
 
 # Define features and target
-features = ['pace', 'shooting', 'passing', 'dribbling', 'defending', 'physic']
+features = ['age','height_cm','weight_kg','pace', 'shooting', 'passing', 'dribbling', 'defending', 'physic', 'preferred_foot', 'work_rate', 'player_positions']
 target = 'overall'
 
 X = df[features]
