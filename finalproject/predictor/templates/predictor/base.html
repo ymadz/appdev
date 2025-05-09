@@ -6,6 +6,7 @@
     <title>{% block title %}FIFA Player Predictor{% endblock %}</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/line-awesome/1.3.0/line-awesome/css/line-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         .navbar {
             background: linear-gradient(to right, rgb(230, 71, 71), rgb(174, 116, 0));
@@ -47,6 +48,14 @@
         .nav-link.active {
             color: white !important;
             background-color: rgba(255, 255, 255, 0.15);
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
     </style>
 </head>

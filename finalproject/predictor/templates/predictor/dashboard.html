@@ -1,30 +1,104 @@
 {% extends "predictor/base.html" %}
 
 {% block content %}
+<style>
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+</style>
+
 <div class="container mt-4">
-    <!-- Statistics Cards -->
-    <div class="row">
-        {% for key, value in stats.items %}
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <h6 class="card-title text-muted">{{ key }}</h6>
-                        <h4 class="card-text">{{ value }}</h4>
+
+    <!-- Dashboard: Model Summary -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-body">
+                    <h4 class="card-title mb-3"><i class="bi bi-cpu-fill text-primary me-2"></i>Model Summary</h4>
+                    <ul class="list-group list-group-flush">
+                        {% for label, value in model_info.items %}
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span class="fw-semibold">{{ label }}</span>
+                                <span>{{ value }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard: Key Statistics -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-body">
+                    <h4 class="card-title mb-3"><i class="bi bi-bar-chart-fill text-success me-2"></i>Key Statistics</h4>
+                    <div class="row">
+                        {% for key, stat in stats.items %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card card-hover shadow-sm border-0 rounded h-100">
+                                    <div class="card-body text-center">
+                                        <i class="bi {{ stat.0 }} fs-2 text-primary"></i>
+                                        <h6 class="card-title text-muted mt-2">{{ key }}</h6>
+                                        <h4 class="card-text">{{ stat.1 }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
-        {% endfor %}
+        </div>
     </div>
 
-    <!-- Graphs -->
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <h5>Distribution of Overall Ratings</h5>
-            <img src="data:image/png;base64,{{ img1 }}" class="img-fluid" alt="Distribution of Overall Ratings">
-        </div>
-        <div class="col-md-6">
-            <h5>Correlation Heatmap (Top Features)</h5>
-            <img src="data:image/png;base64,{{ img2 }}" class="img-fluid" alt="Correlation Heatmap">
+    <!-- Dashboard: Visual Analysis -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-body">
+                    <h4 class="card-title mb-3"><i class="bi bi-graph-up-arrow text-danger me-2"></i>Visual Analysis</h4>
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <div class="card card-hover shadow-sm border-0 rounded">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Distribution of Overall Ratings</h6>
+                                    <img src="data:image/png;base64,{{ img1 }}" class="img-fluid rounded" alt="Distribution of Overall Ratings">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card card-hover shadow-sm border-0 rounded">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Correlation Heatmap (Top Features)</h6>
+                                    <img src="data:image/png;base64,{{ img2 }}" class="img-fluid rounded" alt="Correlation Heatmap">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card card-hover shadow-sm border-0 rounded">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Average Overall by Preferred Foot</h6>
+                                    <img src="data:image/png;base64,{{ img3 }}" class="img-fluid rounded" alt="Average Overall by Preferred Foot">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card card-hover shadow-sm border-0 rounded">
+                                <div class="card-body">
+                                    <h6 class="text-muted">Top 10 Positions by Average Overall</h6>
+                                    <img src="data:image/png;base64,{{ img4 }}" class="img-fluid rounded" alt="Top Positions by Overall Rating">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

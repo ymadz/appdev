@@ -47,24 +47,43 @@ def dashboard(request):
     # Load FIFA data
     df = pd.read_csv('players_21.csv')
 
-    # Drop rows with missing values in important columns
-    df = df.dropna(subset=['short_name', 'age', 'height_cm', 'weight_kg', 'nationality', 'club_name', 'overall', 'potential', 'preferred_foot'])
+    # Drop rows with missing values in key columns
+    df = df.dropna(subset=[
+        'short_name', 'age', 'height_cm', 'weight_kg',
+        'nationality', 'club_name', 'overall',
+        'potential', 'preferred_foot', 'player_positions'
+    ])
 
-    # Select key columns for display
-    df_stats = df[['short_name', 'age', 'height_cm', 'weight_kg', 'nationality', 'club_name', 'overall', 'potential', 'preferred_foot']]
+    # Select key columns
+    df_stats = df[['short_name', 'age', 'height_cm', 'weight_kg', 'nationality',
+                   'club_name', 'overall', 'potential', 'preferred_foot']]
 
-    # Compute summary statistics
+    # Summary statistics
     stats = {
-        'Total Players': len(df_stats),
-        'Average Overall': round(df_stats['overall'].mean(), 2),
-        'Average Potential': round(df_stats['potential'].mean(), 2),
-        'Average Age': round(df_stats['age'].mean(), 2),
+        'Total Players': ('bi-people', len(df_stats)),
+        'Average Overall': ('bi-bar-chart-line', round(df_stats['overall'].mean(), 2)),
+        'Average Potential': ('bi-graph-up', round(df_stats['potential'].mean(), 2)),
+        'Average Age': ('bi-calendar3', round(df_stats['age'].mean(), 2)),
+        'Unique Nationalities': ('bi-globe', df_stats['nationality'].nunique()),
+        'Most Common Club': ('bi-shield-check', df_stats['club_name'].mode()[0] if not df_stats['club_name'].mode().empty else 'N/A'),
+        'Tallest Player (cm)': ('bi-arrow-up', df_stats['height_cm'].max()),
+        'Shortest Player (cm)': ('bi-arrow-down', df_stats['height_cm'].min()),
+        'Dominant Preferred Foot': ('bi-football', df_stats['preferred_foot'].value_counts().idxmax()),
+        'Overall Rating Range': ('bi-rulers', f"{df_stats['overall'].min()} - {df_stats['overall'].max()}")
     }
 
-    # Top 10 players by overall rating
+    # Model Information and Performance
+    model_info = {
+        'Model Type': 'XGBoost Regressor',
+        'Root Mean Squared Error (RMSE)': 2.40,
+        'R² Score': 0.80
+    }
+
+
+    # Top 10 players
     top_players = df_stats.sort_values(by='overall', ascending=False).head(10)
 
-    # Average overall by nationality (top 10)
+    # Top 10 nationalities by average overall
     top_nationalities = (
         df_stats.groupby('nationality')['overall']
         .mean()
@@ -95,6 +114,24 @@ def dashboard(request):
     img3 = get_graph()
     plt.clf()
 
+    ### Visualization 4: Top 10 Positions by Average Overall ###
+    df_positions = df.copy()
+    df_positions['main_position'] = df_positions['player_positions'].apply(lambda x: x.split(',')[0].strip())
+    position_avg = (
+        df_positions.groupby('main_position')['overall']
+        .mean()
+        .sort_values(ascending=False)
+        .head(10)
+        .reset_index()
+    )
+    plt.figure(figsize=(6, 4))
+    sns.barplot(data=position_avg, x='overall', y='main_position', palette='mako')
+    plt.title('Top 10 Positions by Average Overall')
+    plt.xlabel('Average Overall Rating')
+    plt.ylabel('Main Position')
+    img4 = get_graph()
+    plt.clf()
+    
     context = {
         'stats': stats,
         'top_players': top_players.to_dict(orient='records'),
@@ -102,7 +139,10 @@ def dashboard(request):
         'img1': img1,
         'img2': img2,
         'img3': img3,
+        'img4': img4,
+        'model_info': model_info,
     }
+
 
     return render(request, 'predictor/dashboard.html', context)
 
@@ -185,9 +225,11 @@ def predict_overall(request):
             error = "Please correct the errors below."
     else:
         form = PlayerInputForm()
-
+    skill_fields = ["pace", "shooting", "passing", "dribbling", "defending", "physic"]
     return render(request, 'predictor/predict.html', {
         'form': form,
         'prediction': prediction,
+        'skill_fields': skill_fields,
         'error': error
     })
+
