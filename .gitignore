@@ -1,2 +1,4 @@
 crud/crud/__pycache__/views.cpython-313.pyc
 *.pyc
+titanic.zip
+spotifypop/song_popularity_predictor.pkl

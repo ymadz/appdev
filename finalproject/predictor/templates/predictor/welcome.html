@@ -1,0 +1,9 @@
+{% extends 'predictor/base.html' %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+<div class="jumbotron p-5 bg-white rounded shadow-sm">
+    <h1 class="display-4">Welcome to Predictor</h1>
+    <p class="lead">Sign up or login to begin predicting player performance.</p>
+    <a href="{% url 'signup' %}" class="btn btn-primary">Get Started</a>
+</div>
+{% endblock %}
