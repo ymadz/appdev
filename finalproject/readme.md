@@ -1,3 +1,6 @@
+# Save the documentation into a .txt file
+
+documentation_text = """
 # ⚽ FIFA Player Dashboard with Machine Learning
 
 This project is a web-based dashboard built with Django that uses a machine learning model (XGBoost Regressor) to predict FIFA players’ overall ratings. It visualizes player statistics, allows exploration by position, and evaluates model performance using real data.
@@ -6,72 +9,93 @@ This project is a web-based dashboard built with Django that uses a machine lear
 
 ## 📊 Dataset Overview
 
-- **Source**: [FIFA 21 dataset from Kaggle](https://www.kaggle.com/stefanoleone992/fifa-21-complete-player-dataset)
-- **Records**: ~18,000 player entries
-- **Features Used**:
-  - Age, Height, Weight
-  - In-game stats: Pace, Shooting, Passing, Dribbling, Defending, Physic
-  - Categorical: Preferred Foot, Work Rate, Player Positions
-- **Target**: `overall` (overall rating)
+- **Source**: [FIFA 21 dataset from Kaggle](https://www.kaggle.com/stefanoleone992/fifa-21-complete-player-dataset)  
+- **Records**: Approximately 18,000 player entries  
+- **Target Variable**: `overall` (the overall rating of a player)
+
+### 🔍 Features Used
+
+The following features were selected as they contributed significantly to model performance:
+
+- **Age**: Player's age in years  
+- **Height**: Player’s height (in cm)  
+- **Weight**: Player’s weight (in kg)  
+- **Pace**: Combined sprint speed and acceleration  
+- **Shooting**: Finishing, long shots, and shot power  
+- **Passing**: Short and long passing accuracy  
+- **Dribbling**: Ball control and agility  
+- **Defending**: Defensive awareness, standing tackle  
+- **Physic**: Strength, aggression, and stamina  
+- **Preferred Foot**: Categorical feature, encoded (Right = 1, Left = 0)  
+- **Work Rate**: Player’s attacking/defensive work rate, encoded using hash  
+- **Player Positions**: Primary position, hashed to numeric
+
+> ⚠️ **Note**: A large number of original columns were removed because they were not relevant to our use case or were redundant with the features above. This helped reduce noise and improve training speed.
 
 ---
 
 ## 🧹 Preprocessing Steps
 
-1. **Handling Missing Values**:
-   - Rows missing key numeric or target fields were dropped.
+1. **Handling Missing Values**  
+   - Dropped rows with missing values in key numerical or target fields.
 
-2. **Feature Engineering**:
-   - `preferred_foot`: Encoded as binary (Right = 1, Left = 0)
-   - `work_rate` and `player_positions`: Encoded using simple hashing
-   - All features scaled naturally (XGBoost handles scaling internally)
+2. **Feature Engineering**  
+   - `preferred_foot`: Binary encoding  
+   - `work_rate`, `player_positions`: Encoded via lightweight hash-based encoding  
+   - Scaling was not explicitly required since XGBoost handles it internally.
 
-3. **Splitting Data**:
-   - `train_test_split` (80/20 ratio)
+3. **Splitting Data**  
+   - Used an 80/20 split for training and testing.
 
 ---
 
 ## 🤖 Model Architecture
 
-- **Model Used**: `XGBoost Regressor`
-- **Reason**: Efficient with tabular data, handles missing values, good out-of-the-box performance
-- **Parameters**: Default `XGBRegressor()` settings for initial development
+- **Model Used**: `XGBoost Regressor`  
+- **Why XGBoost?**  
+  - Performs exceptionally well on structured/tabular data  
+  - Handles missing values natively  
+  - Offers fast training and good generalization
+
+- **Parameters**: Default `XGBRegressor()` used for the initial version.
 
 ---
 
 ## 📈 Training Results
 
-| Metric         | Score |
-|----------------|-------|
-| Train RMSE     | ~2.34 |
-| Test RMSE      | ~2.35 |
-| Train R² Score | 0.89  |
-| Test R² Score  | 0.88  |
-| Bias-Variance Status | Good Fit (Low Bias, Low Variance) |
+| Metric           | Score  |
+|------------------|--------|
+| Train RMSE       | ~2.34  |
+| Test RMSE        | ~2.35  |
+| Train R² Score   | 0.89   |
+| Test R² Score    | 0.88   |
+| Fit Quality      | Good Fit (Low Bias, Low Variance) |
 
-> Note: These values are dynamically calculated and may vary slightly depending on the random train-test split.
+> Note: Scores may vary slightly depending on the random state used during `train_test_split`.
 
 ---
 
 ## 🔒 Authentication
 
-Authentication was added using Django’s built-in authentication system:
+Authentication was implemented using Django’s built-in system to protect the dashboard:
 
-- Users must log in to access the dashboard
-- `/login/`, `/logout/`, and `/register/` routes were created
-- `@login_required` decorator used to protect dashboard views
+- `/login/` – for existing users  
+- `/logout/` – to securely sign out  
+- `/register/` – for new user signup  
+- All key dashboard views are protected using Django's `@login_required` decorator.
 
 ---
 
 ## 🔧 Integration Steps
 
-1. **Model Training**:  
-   Train `XGBRegressor` on selected features and save using `joblib`:
+1. **Model Training & Saving**
 
-   ```python
-   from xgboost import XGBRegressor
-   from joblib import dump
+The model was trained using `XGBRegressor` and saved with `joblib`:
 
-   model = XGBRegressor()
-   model.fit(X_train, y_train)
-   dump(model, 'xgboost_fifa_model.pkl')
+```python
+from xgboost import XGBRegressor
+from joblib import dump
+
+model = XGBRegressor()
+model.fit(X_train, y_train)
+dump(model, 'xgboost_fifa_model.pkl')
