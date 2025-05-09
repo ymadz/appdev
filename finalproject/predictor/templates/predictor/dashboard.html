@@ -1,6 +1,37 @@
-{% extends 'predictor/base.html' %}
-{% block title %}Dashboard{% endblock %}
+{% extends "predictor/base.html" %}
+
 {% block content %}
-<h2>Hello {{ user.username }} 👋</h2>
-<p>Here is your dashboard with prediction tools and stats.</p>
+<div class="container mt-4">
+    <!-- Statistics Cards -->
+    <div class="row">
+        {% for key, value in stats.items %}
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <h6 class="card-title text-muted">{{ key }}</h6>
+                        <h4 class="card-text">{{ value }}</h4>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Graphs -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h5>Distribution of Overall Ratings</h5>
+            <img src="data:image/png;base64,{{ img1 }}" class="img-fluid" alt="Distribution of Overall Ratings">
+        </div>
+        <div class="col-md-6">
+            <h5>Correlation Heatmap (Top Features)</h5>
+            <img src="data:image/png;base64,{{ img2 }}" class="img-fluid" alt="Correlation Heatmap">
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h5>Average Overall by Preferred Foot</h5>
+            <img src="data:image/png;base64,{{ img3 }}" class="img-fluid" alt="Avg Overall by Preferred Foot">
+        </div>
+    </div>
+</div>
 {% endblock %}
