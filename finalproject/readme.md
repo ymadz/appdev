@@ -94,7 +94,6 @@ Authentication was implemented using Django’s built-in system to protect the d
 
 ### Dashboard Design
 - Balanced simplicity with clarity: minimal layout, selected visualizations, and responsive design using Bootstrap for a professional and user-friendly UI.
-"""
 
 ---
 
