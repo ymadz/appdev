@@ -1,8 +1,3 @@
-# Save the documentation into a .txt file
-
-documentation_text = """
-# ⚽ FIFA Player Dashboard with Machine Learning
-
 This project is a web-based dashboard built with Django that uses a machine learning model (XGBoost Regressor) to predict FIFA players’ overall ratings. It visualizes player statistics, allows exploration by position, and evaluates model performance using real data.
 
 ---
@@ -83,6 +78,23 @@ Authentication was implemented using Django’s built-in system to protect the d
 - `/logout/` – to securely sign out  
 - `/register/` – for new user signup  
 - All key dashboard views are protected using Django's `@login_required` decorator.
+
+---
+
+## ⚠️ Challenges Encountered
+
+### Data Encoding
+- Hash encoding was used as a lightweight method to handle categorical values such as `work_rate` and `player_positions` quickly and efficiently.
+
+### Model Generalization
+- Addressed early signs of overfitting by using an 80/20 train-test split and monitoring performance metrics like RMSE and R² on both datasets.
+
+### Authentication
+- Implemented Django’s authentication system securely, managing session handling and redirect logic to ensure users must log in to access the dashboard.
+
+### Dashboard Design
+- Balanced simplicity with clarity: minimal layout, selected visualizations, and responsive design using Bootstrap for a professional and user-friendly UI.
+"""
 
 ---
 
