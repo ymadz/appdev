@@ -60,7 +60,7 @@ def dashboard(request):
 
     # Summary statistics
     stats = {
-        'Total Players': ('bi-people', len(df_stats)),
+        'Total Players': ('bi-people', len(df_stats), 'color: #dd6950;'),
         'Average Overall': ('bi-bar-chart-line', round(df_stats['overall'].mean(), 2)),
         'Average Potential': ('bi-graph-up', round(df_stats['potential'].mean(), 2)),
         'Average Age': ('bi-calendar3', round(df_stats['age'].mean(), 2)),
@@ -68,16 +68,66 @@ def dashboard(request):
         'Most Common Club': ('bi-shield-check', df_stats['club_name'].mode()[0] if not df_stats['club_name'].mode().empty else 'N/A'),
         'Tallest Player (cm)': ('bi-arrow-up', df_stats['height_cm'].max()),
         'Shortest Player (cm)': ('bi-arrow-down', df_stats['height_cm'].min()),
-        'Dominant Preferred Foot': ('bi-football', df_stats['preferred_foot'].value_counts().idxmax()),
-        'Overall Rating Range': ('bi-rulers', f"{df_stats['overall'].min()} - {df_stats['overall'].max()}")
+        'Dominant Preferred Foot': ('bi-person-walking', df_stats['preferred_foot'].value_counts().idxmax()),
+        # 'Overall Rating Range': ('bi-rulers', f"{df_stats['overall'].min()} - {df_stats['overall'].max()}")
     }
+
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import mean_squared_error, r2_score
+    import numpy as np
+
+    # Prepare features & target for bias-variance analysis
+    feature_cols = ['age', 'height_cm', 'weight_kg', 'pace', 'shooting',
+                    'passing', 'dribbling', 'defending', 'physic',
+                    'preferred_foot', 'work_rate', 'player_positions']
+
+    # Drop rows with missing required features
+    df_model = df.dropna(subset=feature_cols + ['overall'])
+
+    # Encode categorical features
+    df_model['preferred_foot_enc'] = df_model['preferred_foot'].apply(lambda x: 1 if x == 'Right' else 0)
+    df_model['work_rate_enc'] = df_model['work_rate'].apply(lambda x: hash(x) % 1000)
+    df_model['position_group_enc'] = df_model['player_positions'].apply(lambda x: hash(x.split(',')[0].strip()) % 1000)
+
+    X = df_model[['age', 'height_cm', 'weight_kg', 'pace', 'shooting', 'passing',
+                'dribbling', 'defending', 'physic', 'preferred_foot_enc',
+                'work_rate_enc', 'position_group_enc']]
+    y = df_model['overall']
+
+    # Train-test split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Predict
+    y_train_pred = model.predict(X_train)
+    y_test_pred = model.predict(X_test)
+
+    # Metrics
+    rmse_test = round(np.sqrt(mean_squared_error(y_test, y_test_pred)), 2)
+    r2_test = round(r2_score(y_test, y_test_pred), 2)
+    rmse_train = round(np.sqrt(mean_squared_error(y_train, y_train_pred)), 2)
+    r2_train = round(r2_score(y_train, y_train_pred), 2)
+
+    # Bias-Variance assessment
+    if r2_train < 0.6 and r2_test < 0.6:
+        bias_variance_status = 'High Bias'
+    elif r2_train > 0.9 and r2_test < 0.7:
+        bias_variance_status = 'High Variance (Overfitting)'
+    elif abs(r2_train - r2_test) < 0.1 and r2_test > 0.75:
+        bias_variance_status = 'Good Fit (Low Bias, Low Variance)'
+    else:
+        bias_variance_status = 'Moderate Bias/Variance'
+
 
     # Model Information and Performance
     model_info = {
         'Model Type': 'XGBoost Regressor',
-        'Root Mean Squared Error (RMSE)': 2.40,
-        'R² Score': 0.80
+        'Train R² Score': r2_train,
+        'Test R² Score': r2_test,
+        'Train RMSE': rmse_train,
+        'Test RMSE': rmse_test,
+        'Bias-Variance Status': bias_variance_status
     }
+
 
 
     # Top 10 players

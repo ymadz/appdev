@@ -1,4 +1,6 @@
 {% extends 'predictor/base.html' %}
+{% load widget_tweaks %}
+
 
 {% block content %}
 <div class="container mt-4">
@@ -8,21 +10,66 @@
     <div class="alert alert-danger">{{ error }}</div>
   {% endif %}
 
-  <form method="post" class="card p-4 shadow-sm">
+  <form method="post" class="card p-4 shadow-sm bg-light rounded mb-5">
     {% csrf_token %}
+  
+    <!-- SECTION: Basic Info -->
+    <h5 class="mb-3 border-bottom pb-1">📌 Basic Information</h5>
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label">{{ form.age.label }}</label>
+        {{ form.age|add_class:"form-control" }}
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">{{ form.height_cm.label }}</label>
+        {{ form.height_cm|add_class:"form-control" }}
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">{{ form.weight_kg.label }}</label>
+        {{ form.weight_kg|add_class:"form-control" }}
+      </div>
+    </div>
+  
+    <!-- SECTION: Skill Attributes -->
+    <h5 class="mb-3 mt-4 border-bottom pb-1">⚙️ Player Attributes</h5>
     <div class="row">
       {% for field in form %}
-        <div class="col-md-6 mb-3">
-          <label class="form-label">{{ field.label }}</label>
-          {{ field }}
-          {% if field.errors %}
-            <div class="text-danger small">{{ field.errors|striptags }}</div>
-          {% endif %}
-        </div>
+        {% if field.name in skill_fields %}
+          <div class="col-md-4 mb-3">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field|add_class:"form-control" }}
+            {% if field.errors %}
+              <div class="text-danger small">{{ field.errors|striptags }}</div>
+            {% endif %}
+          </div>
+        {% endif %}
       {% endfor %}
     </div>
-    <button type="submit" class="btn btn-primary w-100">Predict</button>
+  
+    <!-- SECTION: Categorical Inputs -->
+    <h5 class="mb-3 mt-4 border-bottom pb-1">🎮 Play Style</h5>
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label">{{ form.preferred_foot.label }}</label>
+        {{ form.preferred_foot|add_class:"form-select" }}
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">{{ form.work_rate.label }}</label>
+        {{ form.work_rate|add_class:"form-select" }}
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">{{ form.player_positions.label }}</label>
+        {{ form.player_positions|add_class:"form-select" }}
+      </div>
+    </div>
+  
+    <!-- Buttons -->
+    <div class="d-flex gap-3 mt-4">
+      <button type="submit" class="btn btn-primary w-100">Predict</button>
+      <button type="reset" class="btn btn-outline-secondary w-100">Reset</button>
+    </div>
   </form>
+  
 
   {% if prediction %}
     <!-- Simplified Bootstrap Modal -->
